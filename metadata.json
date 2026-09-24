@@ -1,0 +1,6 @@
+{
+  "name": "달달(月月)이 급식안심",
+  "description": "위생은 꼼꼼하게, 급식은 당당하게! 학교급식 조리종사자 월별 위생교육 및 교육일지 관리 웹앱",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

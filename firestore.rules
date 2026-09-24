@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions for security
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email.matches('(?i)tabbysa@penz\\.kr') ||
+        request.auth.token.email.matches('(?i)admin@.*') ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // materials collection:
+    // Anyone (anonymous public school users) can READ published materials.
+    // Any authenticated user in admin console or designated admin can write.
+    match /materials/{materialId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // admins collection:
+    match /admins/{adminId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // Default allow read for general app paths if needed, deny unmatched
+    match /{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}
