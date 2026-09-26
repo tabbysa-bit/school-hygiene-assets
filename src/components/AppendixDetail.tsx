@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AppendixGroup, EducationMonth, MaterialItem } from '../types';
 import { ArrowLeft, Plus, Loader2, ZoomIn } from 'lucide-react';
 import { Modal } from './modals/Modal';
+import { EducationCardImage } from './EducationCardImage';
 
 interface AppendixDetailProps {
   group: AppendixGroup | null;
@@ -68,12 +69,14 @@ export const AppendixDetail: React.FC<AppendixDetailProps> = ({
               onClick={() => setZoomItem(item)}
               title="클릭하여 원본 크기로 보기"
             >
-              <img
+              <EducationCardImage
                 src={item.imageUrl}
+                title={item.title}
+                subtitle={item.subtitle}
+                category={group.title}
+                points={item.summaryPoints}
+                themeColor="#15803D"
                 alt={item.title}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-auto object-contain max-h-[700px] transition-transform duration-300 group-hover:scale-[1.008]"
               />
               <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 text-white p-2 rounded-xl backdrop-blur-xs flex items-center gap-1 text-xs font-semibold">
                 <ZoomIn className="w-4 h-4" />

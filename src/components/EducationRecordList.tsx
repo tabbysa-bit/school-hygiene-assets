@@ -45,18 +45,6 @@ export const EducationRecordList: React.FC<EducationRecordListProps> = ({
             )}
           </h3>
           <div className="flex items-center gap-2">
-            {records.length > 0 && onResetMonth && (
-              <button
-                type="button"
-                onClick={onResetMonth}
-                disabled={isSaving}
-                className="flex items-center gap-1 text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50"
-                title={`${month}월 등록 기록 전체 초기화`}
-              >
-                <RotateCcw className="w-3 h-3" />
-                <span>기록 전체 초기화</span>
-              </button>
-            )}
             <button
               type="button"
               onClick={onClose}
@@ -126,6 +114,22 @@ export const EducationRecordList: React.FC<EducationRecordListProps> = ({
                 </button>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Bottom Action: Reset all records for the current month */}
+        {records.length > 0 && onResetMonth && (
+          <div className="mt-4 pt-3 border-t border-slate-100 flex justify-center">
+            <button
+              type="button"
+              onClick={onResetMonth}
+              disabled={isSaving}
+              className="w-full sm:w-auto px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 border border-rose-200 rounded-xl text-xs sm:text-sm font-bold transition-all duration-150 flex items-center justify-center gap-1.5 shadow-2xs active:scale-95 disabled:opacity-50 cursor-pointer"
+              title={`${month}월 등록 교육기록 전체 초기화`}
+            >
+              <RotateCcw className="w-3.5 h-3.5 shrink-0" />
+              <span>{month}월 교육기록 전체 초기화</span>
+            </button>
           </div>
         )}
       </div>

@@ -1,0 +1,467 @@
+{
+  "category": "meal-safety",
+  "title": "급식안심(월) 위생교육 자료",
+  "months": [3, 4, 5, 6, 7, 9, 10, 11, 12, 2],
+  "monthlyMaterials": {
+    "3": {
+      "month": 3,
+      "title": "3월 신학기 개인위생 및 올바른 손씻기",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "videoTitle": "3월 신학기 개인위생 및 올바른 손씻기 요령",
+      "materials": [
+        {
+          "id": "m03_01",
+          "page": 1,
+          "title": "개인위생관리 및 올바른 손씻기 6단계",
+          "subtitle": "조리 전·후, 화장실 이용 후 흐르는 물에 30초 이상",
+          "imagePath": "/meal-safety/images/month03_01.png",
+          "summaryPoints": [
+            "손바닥과 손바닥 마주 대고 문지르기",
+            "손등과 손바닥 대고 문지르기",
+            "손가락 사이를 깍지 끼고 씻기",
+            "두 손 모아 엄지손가락 돌려주기"
+          ]
+        },
+        {
+          "id": "m03_02",
+          "page": 2,
+          "title": "건강진단 및 일일 건강상태 확인",
+          "subtitle": "조리종사자 발열, 설사, 화농성 질환 즉시 보고 및 작업 배제",
+          "imagePath": "/meal-safety/images/month03_02.png",
+          "summaryPoints": [
+            "건강진단결과서(보건증) 연 2회 주기적 갱신",
+            "설사, 발열, 구토 등 감염 증상 즉시 보고",
+            "손·팔에 화농성 질환 발생 시 조리 작업 금지",
+            "출근 직후 체온 측정 및 위생점검 기록부 서명"
+          ]
+        }
+      ]
+    },
+    "4": {
+      "month": 4,
+      "title": "4월 식재료 검수 및 CCP 1 관리",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "videoTitle": "4월 식재료 검수 및 CCP1 검수공정 관리",
+      "materials": [
+        {
+          "id": "m04_01",
+          "page": 1,
+          "title": "CCP 1 검수 공정 및 품온 기준 준수",
+          "subtitle": "냉장 10℃ 이하(생채소 5~10℃), 냉동 -18℃ 이하 빙결 유지",
+          "imagePath": "/meal-safety/images/month04_01.png",
+          "summaryPoints": [
+            "냉장식품 10℃ 이하 품온 측정 후 입고",
+            "냉동식품 -18℃ 이하 및 해동 흔적 유무 확인",
+            "원산지, 소비기한, 포장파손 상태 꼼꼼히 점검",
+            "부적격 식재료 발견 즉시 반품 조치 및 기록"
+          ]
+        },
+        {
+          "id": "m04_02",
+          "page": 2,
+          "title": "식재료 구분 보관 및 선입선출 원칙",
+          "subtitle": "바닥에서 15cm 이상 이격, 원산지·개봉일자 표시 철저",
+          "imagePath": "/meal-safety/images/month04_02.png",
+          "summaryPoints": [
+            "검수 즉시 냉장·냉동고로 신속 입고 (외기 노출 최소화)",
+            "육류, 어류, 채소류 선반 구분 적재",
+            "개봉한 식재료는 밀폐용기 보관 및 라벨링",
+            "선입선출(First In First Out) 철저 준수"
+          ]
+        }
+      ]
+    },
+    "5": {
+      "month": 5,
+      "title": "5월 식재료 세척 및 소독공정(CCP 3)",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "videoTitle": "5월 식재료 세척 및 소독공정 관리",
+      "materials": [
+        {
+          "id": "m05_01",
+          "page": 1,
+          "title": "가열하지 않는 채소·과일류 소독공정(CCP 3)",
+          "subtitle": "유효염소농도 100ppm 이상, 5분 침지 후 음용수로 3회 이상 헹굼",
+          "imagePath": "/meal-safety/images/month05_01.png",
+          "summaryPoints": [
+            "흐르는 물에 3회 이상 흙과 이물질 세척",
+            "염소소독액 유효염소농도 100ppm 시험지로 확인",
+            "소독액에 채소·과일 5분간 침지",
+            "먹는 물(음용수)로 3회 이상 깨끗이 헹굼"
+          ]
+        },
+        {
+          "id": "m05_02",
+          "page": 2,
+          "title": "소독액 조제 및 잔류염소 측정 관리",
+          "subtitle": "정확한 물과 락스 희석비율 준수 및 기록지 작성",
+          "imagePath": "/meal-safety/images/month05_02.png",
+          "summaryPoints": [
+            "소독조 물 용량 확인 후 정확한 락스양 계량",
+            "염소시험지로 100~130ppm 적정 농도 확인",
+            "소독 시간 준수(타이머 사용 필수)",
+            "소독일지에 소독농도·침지시간·담당자 서명"
+          ]
+        }
+      ]
+    },
+    "6": {
+      "month": 6,
+      "title": "6월 가열조리공정 및 중심온도 관리(CCP 2)",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "videoTitle": "6월 가열조리공정 및 중심온도 측정관리",
+      "materials": [
+        {
+          "id": "m06_01",
+          "page": 1,
+          "title": "가열조리 중심온도 85℃ 1분 이상(CCP 2)",
+          "subtitle": "일반식품 74℃ 이상, 패류·어류·육류 분쇄육 85℃ 이상 1분 가열",
+          "imagePath": "/meal-safety/images/month06_01.png",
+          "summaryPoints": [
+            "탐침온도계 사용 전 소독용 에탄올로 소독",
+            "가장 두꺼운 중심부 3개소 이상 온도 측정",
+            "중심온도 85℃ 이상에서 최소 1분간 지속 확인",
+            "기준 미달 시 중심온도 도달할 때까지 추가 가열"
+          ]
+        },
+        {
+          "id": "m06_02",
+          "page": 2,
+          "title": "가열조리 후 신속 냉각 및 보온·보냉 관리",
+          "subtitle": "조리 완료 후 2시간 이내 배식 완료 원칙",
+          "imagePath": "/meal-safety/images/month06_02.png",
+          "summaryPoints": [
+            "조리 완료 후 실온 방치 금지",
+            "온음식은 57℃ 이상 보온 유지 배식",
+            "찬음식은 5℃ 이하(생채소 10℃) 보냉 유지 배식",
+            "배식 완료 시각까지 온도 및 위생상태 모니터링"
+          ]
+        }
+      ]
+    },
+    "7": {
+      "month": 7,
+      "title": "7월 하절기 병원성대장균 등 식중독 예방",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "videoTitle": "7월 하절기 식중독 예방 및 교차오염 방지",
+      "materials": [
+        {
+          "id": "m07_01",
+          "page": 1,
+          "title": "병원성대장균 및 살모넬라 식중독 예방",
+          "subtitle": "고온다습 하절기 세균 증식 억제 및 가열조리 철저",
+          "imagePath": "/meal-safety/images/month07_01.png",
+          "summaryPoints": [
+            "조리실 내 온도 25℃ 이하, 습도 60% 이하 유지",
+            "달걀 취급 후 반드시 손 세척 및 장갑 교체",
+            "육류 핏물 제거 시 주변 튀김 및 오염 방지",
+            "생채소 겉절이 제공 지양 및 숙채류 대체"
+          ]
+        },
+        {
+          "id": "m07_02",
+          "page": 2,
+          "title": "조리도구 열탕소독 및 살균보관 철저",
+          "subtitle": "100℃ 열탕 3분 이상 또는 70% 에탄올 분무 소독",
+          "imagePath": "/meal-safety/images/month07_02.png",
+          "summaryPoints": [
+            "칼·도마 사용 즉시 세척 후 열탕소독",
+            "자외선 소독고 겹치지 않게 정리 보관",
+            "고무장갑 공정별 색상 구분(전처리·조리·세척)",
+            "행주 1일 1회 이상 삶아 소독하거나 일회용 사용"
+          ]
+        }
+      ]
+    },
+    "9": {
+      "month": 9,
+      "title": "9월 2학기 개학 식중독 예방 및 기구 점검",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "videoTitle": "9월 2학기 개학 위생점검 및 기구소독",
+      "materials": [
+        {
+          "id": "m09_01",
+          "page": 1,
+          "title": "2학기 개학 급식시설·기구 일제 살균소독",
+          "subtitle": "방학 중 정체수 배출, 음용수 수질검사 및 저수조 청소 확인",
+          "imagePath": "/meal-safety/images/month09_01.png",
+          "summaryPoints": [
+            "급수관 내 고인 물 3분 이상 퇴수 후 사용",
+            "식기세척기 노즐 분해 청소 및 작동상태 점검",
+            "냉장·냉동고 내부 청소 및 온도 센서 교정",
+            "조리종사자 개학 전 건강진단증 유효여부 확인"
+          ]
+        },
+        {
+          "id": "m09_02",
+          "page": 2,
+          "title": "가을철 환절기 살모넬라 및 장염비브리오 주의",
+          "subtitle": "기온차 큰 환절기 방심 금물, 어패류 및 알류 철저 가열",
+          "imagePath": "/meal-safety/images/month09_02.png",
+          "summaryPoints": [
+            "어패류는 수돗물(담수)로 충분히 씻어 장염비브리오 제거",
+            "달걀 껍데기 세척란 사용 및 중심부 85℃ 1분 가열",
+            "칼·도마 육류·어류·채소 구분사용 엄수",
+            "조리 후 2시간 경과 급식 절대 재제공 금지"
+          ]
+        }
+      ]
+    },
+    "10": {
+      "month": 10,
+      "title": "10월 교차오염 방지 및 구역관리",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "videoTitle": "10월 교차오염 방지 및 작업구역 구분",
+      "materials": [
+        {
+          "id": "m10_01",
+          "page": 1,
+          "title": "오염구역과 비오염구역의 철저한 동선 분리",
+          "subtitle": "검수·전처리(오염)구역과 조리·배식(청결)구역 교차오염 차단",
+          "imagePath": "/meal-safety/images/month10_01.png",
+          "summaryPoints": [
+            "전처리실과 조리실 사이 전용 신발 및 앞치마 교체",
+            "오염구역 사용 도구 청결구역 반입 절대 금지",
+            "조리 완료된 음식 위생덮개 필수 덮기",
+            "배식대 주변 정리정돈 및 소독 실시"
+          ]
+        },
+        {
+          "id": "m10_02",
+          "page": 2,
+          "title": "칼·도마·고무장갑 색상별 용도 구분",
+          "subtitle": "빨강: 육류 / 파랑: 어류 / 초록: 채소류 / 노랑: 완제품",
+          "imagePath": "/meal-safety/images/month10_02.png",
+          "summaryPoints": [
+            "공정별 전용 칼·도마 사용 및 섞임 방지",
+            "완제품 취급 시 멸균 위생장갑 착용",
+            "고무장갑 세척실/조리실/전처리실 색상 구분",
+            "칼·도마 칼집 및 깊은 흠집 발생 시 즉시 교체"
+          ]
+        }
+      ]
+    },
+    "11": {
+      "month": 11,
+      "title": "11월 겨울철 노로바이러스 식중독 예방",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "videoTitle": "11월 겨울철 노로바이러스 식중독 예방수칙",
+      "materials": [
+        {
+          "id": "m11_01",
+          "page": 1,
+          "title": "노로바이러스 특성 및 85℃ 1분 가열 원칙",
+          "subtitle": "영하 20℃에서도 생존, 알코올에 내성 강함, 염소소독 필수",
+          "imagePath": "/meal-safety/images/month11_01.png",
+          "summaryPoints": [
+            "어패류(굴, 바지락 등) 중심온도 85℃ 1분 이상 가열",
+            "비누를 사용해 흐르는 물에 30초 이상 손씻기",
+            "지하수는 반드시 끓여서 음용 및 조리 사용",
+            "구토물 소독 시 1,000~5,000ppm 고농도 염소액 사용"
+          ]
+        },
+        {
+          "id": "m11_02",
+          "page": 2,
+          "title": "유증상자 발생 시 즉시 보고 및 작업 배제",
+          "subtitle": "구토, 설사 증상자 완치 후 48~72시간까지 조리 참여 금지",
+          "imagePath": "/meal-safety/images/month11_02.png",
+          "summaryPoints": [
+            "동거 가족 중 노로바이러스 감염자 발생 시 즉시 보고",
+            "조리실 화장실 손잡이 및 수도꼭지 락스 소독 강화",
+            "전용 일회용 장갑 자주 교체 착용",
+            "증상 회복 후에도 의사 소견 확인 후 복귀"
+          ]
+        }
+      ]
+    },
+    "12": {
+      "month": 12,
+      "title": "12월 조리실 안전사고 예방 및 방충·방서",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "videoTitle": "12월 조리실 안전사고 예방 및 방충방서 관리",
+      "materials": [
+        {
+          "id": "m12_01",
+          "page": 1,
+          "title": "조리실 미끄러짐·화상·절단 안전사고 예방",
+          "subtitle": "바닥 물기 제거, 미끄럼방지 안전화 착용, 방열장갑 사용",
+          "imagePath": "/meal-safety/images/month12_01.png",
+          "summaryPoints": [
+            "바닥 물기와 기름기 즉시 대걸레로 제거",
+            "뜨거운 국솥 및 튀김기 작업 시 방열 앞치마·장갑 착용",
+            "야채절단기 작동 중 손 투입 절대 금지 (전용 누름봉 사용)",
+            "칼 사용 시 주의집중 및 이동 시 칼 끝 바닥 향하기"
+          ]
+        },
+        {
+          "id": "m12_02",
+          "page": 2,
+          "title": "조리실 배수구 및 방충·방서 설비 점검",
+          "subtitle": "방충망 틈새 점검, 배수 트랩 청소 및 포충등 램프 교체",
+          "imagePath": "/meal-safety/images/month12_02.png",
+          "summaryPoints": [
+            "조리실 출입문 및 환기창 방충망 찢김 확인",
+            "배수구 트랩 찌꺼기 매일 마감 시 수거 및 소독",
+            "포충등 끈끈이 및 자외선 램프 주기적 교체",
+            "외부 배관 틈새 차단재(실리콘 등) 밀폐 확인"
+          ]
+        }
+      ]
+    },
+    "2": {
+      "month": 2,
+      "title": "2월 학년말 시설·설비 대청소 및 소독",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "videoTitle": "2월 학년말 시설 대청소 및 신학년도 준비",
+      "materials": [
+        {
+          "id": "m02_01",
+          "page": 1,
+          "title": "조리실 배기후드, 벽면, 바닥 찌든 때 제거",
+          "subtitle": "후드 필터 분해 세척, 배수 트렌치 고압세척 및 살균",
+          "imagePath": "/meal-safety/images/month02_01.png",
+          "summaryPoints": [
+            "배기후드 내부 기름때 친환경 세척제 제거",
+            "벽면 타일 줄눈 곰팡이 제거 및 락스 소독",
+            "바닥 트렌치 커버 들어내어 슬러지 완벽 제거",
+            "조리대 하부 선반 및 서랍 분해 청소"
+          ]
+        },
+        {
+          "id": "m02_02",
+          "page": 2,
+          "title": "냉장·냉동고 성에 제거 및 온도센서 점검",
+          "subtitle": "신학기 안정적인 급식 개시를 위한 총괄 위생 점검",
+          "imagePath": "/meal-safety/images/month02_02.png",
+          "summaryPoints": [
+            "냉장·냉동고 전원 차단 후 성에 완벽 제거 및 살균",
+            "문 개스킷(고무패킹) 탄력 및 곰팡이 오염 점검",
+            "탐침온도계, 식기세척기 온도센서 검·교정",
+            "위생복, 앞치마, 위생화 새 학기 교체 수량 파악"
+          ]
+        }
+      ]
+    }
+  },
+  "appendices": {
+    "foodborne": {
+      "key": "foodborne",
+      "title": "계절별 주요 식중독 예방 가이드",
+      "description": "봄, 여름, 가을, 겨울 계절별 원인균 특성과 조리실 핵심 관리 요령",
+      "materials": [
+        {
+          "id": "app_fb_01",
+          "page": 1,
+          "title": "봄철: 클로스트리디움 퍼프린젠스 식중독 예방",
+          "subtitle": "대용량 조리 후 실온 완만 냉각 시 포자 발아 위험! 신속 냉각 필수",
+          "imagePath": "/meal-safety/appendices/foodborne_01.png",
+          "summaryPoints": [
+            "국, 카레, 제육볶음 등 대량 조리 후 실온 장시간 방치 금지",
+            "조리 완료 후 2시간 이내에 60℃ 이하 또는 5℃ 이하로 신속 냉각",
+            "음식을 보관할 때는 얕은 용기에 나누어 담기",
+            "보관했던 음식을 재제공할 때는 75℃ 이상에서 완전히 재가열"
+          ]
+        },
+        {
+          "id": "app_fb_02",
+          "page": 2,
+          "title": "여름철: 병원성 대장균 및 살모넬라균",
+          "subtitle": "고온다습기 생채소 세척·소독(100ppm 5분) 및 가열온도 준수",
+          "imagePath": "/meal-safety/appendices/foodborne_02.png",
+          "summaryPoints": [
+            "생채소 3회 이상 세척 후 염소 100ppm 5분 침지 소독",
+            "달걀 취급 후 반드시 손을 씻고 다른 식재료 만지기",
+            "닭고기, 돼지고기 중심부 85℃ 1분 이상 완전히 익히기",
+            "칼·도마 공정별 철저한 구분 사용"
+          ]
+        },
+        {
+          "id": "app_fb_03",
+          "page": 3,
+          "title": "가을철: 장염비브리오 및 캠필로박터 제주니",
+          "subtitle": "어패류 흐르는 수돗물 세척 및 생닭 세척 시 튀김 주의",
+          "imagePath": "/meal-safety/appendices/foodborne_03.png",
+          "summaryPoints": [
+            "생닭 세척 시 세척수가 주변 조리도구나 채소에 튀지 않도록 주의",
+            "어패류는 담수(수돗물)에 2~3회 깨끗이 씻어 비브리오균 사멸",
+            "칼, 도마, 행주 매일 열탕 및 살균소독",
+            "가열조리 중심온도 85℃ 1분 이상 지속"
+          ]
+        },
+        {
+          "id": "app_fb_04",
+          "page": 4,
+          "title": "겨울철: 노로바이러스 감염증 차단",
+          "subtitle": "입자 작고 전염력 강력, 염소계 소독제 1,000ppm 이상 사용",
+          "imagePath": "/meal-safety/appendices/foodborne_04.png",
+          "summaryPoints": [
+            "조리종사자 구토·설사 증상 시 즉시 업무 배제(회복 후 3일까지)",
+            "알코올 소독제로는 노로바이러스 사멸 불가 → 락스 희석액 사용",
+            "물 1L에 가정용 락스(5%) 20mL 혼합하여 1,000ppm 소독액 제조",
+            "화장실 문손잡이, 수도꼭지, 작업대 매일 2회 이상 소독"
+          ]
+        }
+      ]
+    },
+    "ccpcp": {
+      "key": "ccpcp",
+      "title": "CCP 및 CP 기록지 작성요령",
+      "description": "학교급식 HACCP 중요관리점 모니터링 기준 및 한계기준 이탈 시 개선조치",
+      "materials": [
+        {
+          "id": "app_ccp_01",
+          "page": 1,
+          "title": "CCP 1: 식재료 검수기록지 작성요령",
+          "subtitle": "온도, 소비기한, 품질상태 실측 기록 및 부적격 시 반품 조치",
+          "imagePath": "/meal-safety/appendices/ccpcp_01.png",
+          "summaryPoints": [
+            "냉장 10℃(생채소 5~10℃), 냉동 -18℃ 이하 온도계 실측치 기록",
+            "원산지증명서 및 축산물등급판정확인서 대조 확인",
+            "포장 파손 및 녹았다 다시 언 흔적(성에 과다) 점검",
+            "기준 미달 시 즉시 반품 후 반품일지에 기록 및 재입고 검수"
+          ]
+        },
+        {
+          "id": "app_ccp_02",
+          "page": 2,
+          "title": "CCP 2: 가열조리공정 모니터링",
+          "subtitle": "식품 중심부 3군데 측정, 85℃ 1분 이상 유지 기록",
+          "imagePath": "/meal-safety/appendices/ccpcp_02.png",
+          "summaryPoints": [
+            "조리솥 또는 오븐팬 내 가장자리와 중심부 3곳 이상 품온 측정",
+            "모든 측정 지점이 85℃ 이상 도달했을 때 타이머로 1분 유지 확인",
+            "측정 시간과 중심온도를 기록지에 정직하게 실시간 기록",
+            "기준 온도 미달 시 즉시 추가 가열 후 재측정 기록"
+          ]
+        },
+        {
+          "id": "app_ccp_03",
+          "page": 3,
+          "title": "CCP 3: 생채소·과일류 세척 및 소독",
+          "subtitle": "유효염소농도 100ppm 시험지 부착 및 침지시간 준수",
+          "imagePath": "/meal-safety/appendices/ccpcp_03.png",
+          "summaryPoints": [
+            "소독액 희석 후 염소시험지를 담가 100~130ppm 색상 대조",
+            "소독농도 시험지를 기록지에 테이프로 부착하여 보관",
+            "5분간 침지 소독 후 음용수로 3회 이상 헹굼 완료 확인",
+            "소독 시간과 헹굼 횟수, 담당자 서명 누락 없이 작성"
+          ]
+        },
+        {
+          "id": "app_ccp_04",
+          "page": 4,
+          "title": "CP 관리: 기구 세척·소독 및 보존식 관리",
+          "subtitle": "열탕소독 100℃ 3분, 자외선 살균기 건조 보관, 보존식 -18℃ 144시간",
+          "imagePath": "/meal-safety/appendices/ccpcp_04.png",
+          "summaryPoints": [
+            "식판 및 조리도구 세척 후 100℃ 열탕 또는 71℃ 이상 열풍 건조",
+            "보존식 전용 용기에 매회 제공된 전 메뉴 100g 이상 채취",
+            "보존식 냉동고(-18℃ 이하)에 144시간(6일간) 의무 냉동 보관",
+            "채취일시, 채취자 서명 라벨링 후 보존식 기록부 작성"
+          ]
+        }
+      ]
+    }
+  }
+}

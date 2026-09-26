@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Header } from './components/Header';
+import { Header, AppTab } from './components/Header';
 import { MonthSelector } from './components/MonthSelector';
 import { MonthlyMaterials } from './components/MonthlyMaterials';
 import { EducationRecordList } from './components/EducationRecordList';
 import { AppendixMenu } from './components/AppendixMenu';
 import { AppendixDetail } from './components/AppendixDetail';
+import { CategoryHome } from './components/CategoryHome';
+import { MorningEducation } from './components/MorningEducation';
 import { SchoolSettingsModal } from './components/modals/SchoolSettingsModal';
 import { EducationDateModal } from './components/modals/EducationDateModal';
 import { ConfirmModal, MessageModal } from './components/modals/MessageModal';
@@ -16,6 +18,7 @@ import {
   EducationMonth,
   EducationRecord,
   MaterialItem,
+  MorningMaterialItem,
   SchoolSettings
 } from './types';
 import { contentService } from './services/contentService';
@@ -29,7 +32,11 @@ import {
   saveSettings,
   getQuizUrl,
   getQuizQrUrl,
-  DEFAULT_QUIZ_URL
+  DEFAULT_QUIZ_URL,
+  getMorningProgress,
+  setMorningProgress,
+  getMorningNewProgress,
+  setMorningNewProgress
 } from './services/storage';
 import {
   getPrintCards,
@@ -39,21 +46,26 @@ import { GeneratePdfOptions } from './utils/pdfGenerator';
 import { Sparkles, ArrowLeft } from 'lucide-react';
 
 export default function App() {
-  // Navigation tab state (supports /admin pathname or #admin hash)
-  const [activeTab, setActiveTab] = useState<'monthly' | 'morning' | 'admin'>(() => {
+  // Navigation tab state (supports /admin pathname or #hash)
+  const [activeTab, setActiveTab] = useState<AppTab>(() => {
     if (window.location.pathname === '/admin' || window.location.hash === '#admin') {
       return 'admin';
     }
-    return 'monthly';
+    if (window.location.hash === '#meal-safety') return 'meal-safety';
+    if (window.location.hash === '#morning') return 'morning';
+    if (window.location.hash === '#morning-new') return 'morning-new';
+    return 'home';
   });
 
-  // Keep URL in sync with admin tab
-  const handleSelectTab = (tab: 'monthly' | 'morning' | 'admin') => {
+  // Keep URL in sync with tabs
+  const handleSelectTab = (tab: AppTab) => {
     setActiveTab(tab);
     if (tab === 'admin') {
       window.history.pushState(null, '', '/admin');
-    } else {
+    } else if (tab === 'home') {
       window.history.pushState(null, '', '/');
+    } else {
+      window.history.pushState(null, '', `#${tab}`);
     }
   };
 
@@ -61,13 +73,60 @@ export default function App() {
     const handlePopState = () => {
       if (window.location.pathname === '/admin' || window.location.hash === '#admin') {
         setActiveTab('admin');
+      } else if (window.location.hash === '#meal-safety') {
+        setActiveTab('meal-safety');
+      } else if (window.location.hash === '#morning') {
+        setActiveTab('morning');
+      } else if (window.location.hash === '#morning-new') {
+        setActiveTab('morning-new');
       } else {
-        setActiveTab('monthly');
+        setActiveTab('home');
       }
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+
+  // Morning hygiene progress states
+  const [morningProgress, setMorningProgressState] = useState<number>(0);
+  const [morningNewProgress, setMorningNewProgressState] = useState<number>(0);
+  const [morningMaterials, setMorningMaterials] = useState<MorningMaterialItem[]>([]);
+  const [morningNewMaterials, setMorningNewMaterials] = useState<MorningMaterialItem[]>([]);
+  const [isLoadingMorning, setIsLoadingMorning] = useState<boolean>(false);
+  const [isLoadingMorningNew, setIsLoadingMorningNew] = useState<boolean>(false);
+
+  // Load morning progress on mount
+  useEffect(() => {
+    getMorningProgress().then(setMorningProgressState);
+    getMorningNewProgress().then(setMorningNewProgressState);
+  }, []);
+
+  // Lazy-load morning materials when corresponding tab is selected
+  useEffect(() => {
+    if (activeTab === 'morning' && morningMaterials.length === 0) {
+      setIsLoadingMorning(true);
+      contentService.getMorningMaterials().then((data) => {
+        setMorningMaterials(data);
+        setIsLoadingMorning(false);
+      });
+    } else if (activeTab === 'morning-new' && morningNewMaterials.length === 0) {
+      setIsLoadingMorningNew(true);
+      contentService.getMorningNewMaterials().then((data) => {
+        setMorningNewMaterials(data);
+        setIsLoadingMorningNew(false);
+      });
+    }
+  }, [activeTab, morningMaterials.length, morningNewMaterials.length]);
+
+  const handleSaveMorningProgress = async (day: number) => {
+    const saved = await setMorningProgress(day);
+    setMorningProgressState(saved);
+  };
+
+  const handleSaveMorningNewProgress = async (day: number) => {
+    const saved = await setMorningNewProgress(day);
+    setMorningNewProgressState(saved);
+  };
 
   // Active month (defaults to 3 as school year begins in March)
   const [currentMonth, setCurrentMonth] = useState<EducationMonth>(3);
@@ -531,7 +590,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f8fb] text-[#263238] font-sans">
+    <div className="min-h-screen text-[#263238] font-sans">
       <div className="max-w-[920px] mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
         <Header
@@ -541,9 +600,33 @@ export default function App() {
           onSelectTab={handleSelectTab}
         />
 
-        {/* Tab 1: Monthly Hygiene Education (Main App) */}
-        {activeTab === 'monthly' && (
+        {/* Tab 0: 3 Categories Menu Home (Default First Screen) */}
+        {activeTab === 'home' && (
+          <CategoryHome
+            morningProgress={morningProgress}
+            morningNewProgress={morningNewProgress}
+            schoolSettings={schoolSettings}
+            quizUrl={quizUrl}
+            onSelectCategory={(cat) => handleSelectTab(cat)}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+          />
+        )}
+
+        {/* Tab 1: 급식안심(월) - Monthly Hygiene Education & Log */}
+        {activeTab === 'meal-safety' && (
           <main>
+            {/* Top Back to Home Button */}
+            <div className="mb-4">
+              <button
+                type="button"
+                onClick={() => handleSelectTab('home')}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                전체 카테고리로
+              </button>
+            </div>
+
             {/* Month Selector */}
             <MonthSelector
               currentMonth={currentMonth}
@@ -613,35 +696,43 @@ export default function App() {
           </main>
         )}
 
-        {/* Tab 2: Future Module "모닝위생" Placeholder */}
+        {/* Tab 2: 모닝위생(일) */}
         {activeTab === 'morning' && (
-          <div className="p-8 sm:p-12 bg-white rounded-3xl border border-slate-200 text-center shadow-xs">
-            <div className="inline-flex p-4 bg-amber-50 text-amber-600 rounded-3xl mb-4">
-              <Sparkles className="w-10 h-10" />
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">
-              쓱- 보고 싹- 지키는 모닝위생
-            </h2>
-            <p className="text-sm text-slate-600 max-w-md mx-auto mb-6 leading-relaxed">
-              조리 전 1분! 일일 핵심 위생수칙(Day 1 ~ Day 190) 카드뉴스가 곧 제공될 예정입니다.
-              현재 1차 버전에서는 <strong>[월별 위생교육]</strong>이 서비스 중입니다.
-            </p>
-            <button
-              type="button"
-              onClick={() => setActiveTab('monthly')}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#527765] hover:bg-[#436353] text-white text-sm font-bold rounded-xl transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              월별 위생교육으로 돌아가기
-            </button>
-          </div>
+          <MorningEducation
+            type="regular"
+            title="모닝위생(일)"
+            badge="조리 전 3분 일일 교육"
+            materials={morningMaterials}
+            isLoading={isLoadingMorning}
+            currentProgress={morningProgress}
+            onSaveProgress={handleSaveMorningProgress}
+            onBackToCategories={() => handleSelectTab('home')}
+          />
         )}
 
-        {/* Tab 3: Admin Page */}
+        {/* Tab 3: 모닝위생_신규(일) */}
+        {activeTab === 'morning-new' && (
+          <MorningEducation
+            type="new"
+            title="모닝위생_신규(일)"
+            badge="신규 맞춤 집중과정"
+            materials={morningNewMaterials}
+            isLoading={isLoadingMorningNew}
+            currentProgress={morningNewProgress}
+            onSaveProgress={handleSaveMorningNewProgress}
+            onBackToCategories={() => handleSelectTab('home')}
+          />
+        )}
+
+        {/* Tab 4: Admin Page */}
         {activeTab === 'admin' && (
           <AdminPage
-            onBackToApp={() => handleSelectTab('monthly')}
-            onRefreshParent={() => loadMonthMaterials(currentMonth)}
+            onBackToApp={() => handleSelectTab('home')}
+            onRefreshParent={() => {
+              loadMonthMaterials(currentMonth);
+              getMorningProgress().then(setMorningProgressState);
+              getMorningNewProgress().then(setMorningNewProgressState);
+            }}
           />
         )}
       </div>
