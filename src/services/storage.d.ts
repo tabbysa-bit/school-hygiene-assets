@@ -33,6 +33,31 @@ export function getMorningProgress(): Promise<number>;
 export function setMorningProgress(day: number): Promise<number>;
 
 export function getTodayDateString(): string;
+
+export function getMorningData(courseId?: string): Promise<MorningNewProgressData>;
+export function completeMorningDay(
+  courseId: string,
+  day: number,
+  title: string,
+  date?: string
+): Promise<{
+  isAlreadyCompleted: boolean;
+  data: MorningNewProgressData;
+  existingRecord?: MorningNewRecord;
+}>;
+export function setMorningCourseProgress(courseId: string, day: number): Promise<number>;
+export function updateMorningRecordDate(
+  courseId: string,
+  day: number,
+  newDate: string
+): Promise<MorningNewProgressData>;
+export function deleteMorningRecord(courseId: string, day: number): Promise<MorningNewProgressData>;
+export function getMorningRecordsByMonth(
+  courseId: string,
+  year: number | string,
+  month: number | string
+): Promise<Array<MorningNewRecord & { image: string; formattedDate: string }>>;
+
 export function getMorningNewData(): Promise<MorningNewProgressData>;
 export function getMorningNewProgress(): Promise<number>;
 export function getMorningNewRecords(): Promise<MorningNewRecord[]>;

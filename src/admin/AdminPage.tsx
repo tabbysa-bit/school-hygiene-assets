@@ -482,7 +482,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
               type="url"
               value={quizUrlInput}
               onChange={(e) => setQuizUrlInput(e.target.value)}
-              placeholder="https://foodhygienequiz.netlify.app/"
+              placeholder="https://thtkssla.github.io/foodhygiene/"
               className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-xs sm:text-sm"
             />
             <button

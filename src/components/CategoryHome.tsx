@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { SchoolSettings } from '../types';
 import {
   ShieldCheck,
@@ -8,19 +8,14 @@ import {
   Clock,
   BookOpen,
   ArrowRight,
-  HelpCircle,
-  ExternalLink,
-  QrCode,
-  Settings,
-  ChevronRight,
-  CheckCircle2
+  Settings
 } from 'lucide-react';
 
 interface CategoryHomeProps {
   morningProgress: number;
   morningNewProgress: number;
   schoolSettings: SchoolSettings;
-  quizUrl: string;
+  quizUrl?: string;
   onSelectCategory: (cat: 'meal-safety' | 'morning' | 'morning-new') => void;
   onOpenSettings: () => void;
 }
@@ -29,11 +24,9 @@ export const CategoryHome: React.FC<CategoryHomeProps> = ({
   morningProgress,
   morningNewProgress,
   schoolSettings,
-  quizUrl,
   onSelectCategory,
   onOpenSettings
 }) => {
-  const [showQuizQr, setShowQuizQr] = useState(false);
   const totalDays = 190;
 
   const morningPercent = Math.min(100, Math.round((morningProgress / totalDays) * 100));
@@ -41,11 +34,6 @@ export const CategoryHome: React.FC<CategoryHomeProps> = ({
 
   const hasSchoolSettings =
     Boolean(schoolSettings.schoolName) && schoolSettings.participants.length > 0;
-
-  // Generate QR image url via public API
-  const quizQrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-    quizUrl
-  )}`;
 
   return (
     <div className="space-y-8">
@@ -100,7 +88,7 @@ export const CategoryHome: React.FC<CategoryHomeProps> = ({
           {/* Card 1: 급식안심(월) */}
           <div
             onClick={() => onSelectCategory('meal-safety')}
-            className="group relative bg-white rounded-3xl p-6 border-2 border-slate-200 hover:border-emerald-500 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col justify-between"
+            className="group relative bg-white rounded-3xl p-6 border-2 border-emerald-200 hover:border-emerald-400 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -143,7 +131,7 @@ export const CategoryHome: React.FC<CategoryHomeProps> = ({
 
             <button
               type="button"
-              className="w-full py-3 px-4 bg-emerald-700 group-hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-2xl transition-colors flex items-center justify-center gap-1.5 shadow-xs"
+              className="w-full py-3 px-4 bg-emerald-600 group-hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-2xl transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
             >
               <span>급식안심 교육 시작</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -153,7 +141,7 @@ export const CategoryHome: React.FC<CategoryHomeProps> = ({
           {/* Card 2: 모닝위생(일) */}
           <div
             onClick={() => onSelectCategory('morning')}
-            className="group relative bg-white rounded-3xl p-6 border-2 border-slate-200 hover:border-emerald-500 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col justify-between"
+            className="group relative bg-white rounded-3xl p-6 border-2 border-amber-200 hover:border-amber-400 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -161,7 +149,7 @@ export const CategoryHome: React.FC<CategoryHomeProps> = ({
                   <Clock className="w-3 h-3 text-amber-600" />
                   조리 전 3분
                 </span>
-                <span className="text-xs font-bold text-slate-400 group-hover:text-emerald-600 transition-colors">
+                <span className="text-xs font-bold text-slate-400 group-hover:text-amber-600 transition-colors">
                   02
                 </span>
               </div>
@@ -170,7 +158,7 @@ export const CategoryHome: React.FC<CategoryHomeProps> = ({
                 <Sparkles className="w-6 h-6" />
               </div>
 
-              <h3 className="text-xl font-black text-slate-900 mb-2 group-hover:text-emerald-700 transition-colors">
+              <h3 className="text-xl font-black text-slate-900 mb-2 group-hover:text-amber-700 transition-colors">
                 모닝위생(일)
               </h3>
 
@@ -178,25 +166,35 @@ export const CategoryHome: React.FC<CategoryHomeProps> = ({
                 Day001부터 Day190까지 학교 급식일 순서대로 이어가는 일일 핵심 위생수칙
               </p>
 
-              <div className="space-y-1.5 mb-6 text-[11px] text-slate-500 bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                  <span>조리 전 3분 핵심 위생 체크</span>
+              {/* Progress status for Morning */}
+              <div className="mb-6 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 space-y-2">
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-slate-600">현재 진행</span>
+                  <span className="text-amber-700">Day {morningProgress} / {totalDays}</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                  <span>Day001부터 Day190 급식일 순차 수록</span>
+                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-amber-500 rounded-full transition-all duration-300"
+                    style={{ width: `${morningPercent}%` }}
+                  />
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                  <span>조리실 현장 맞춤 위생수칙 실천</span>
-                </div>
+                {morningProgress >= totalDays ? (
+                  <p className="text-[11px] font-bold text-amber-700">
+                    🎉 모닝위생 전체 교육을 완료했습니다.
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-slate-500">
+                    {morningProgress === 0
+                      ? '아직 시작하지 않았습니다.'
+                      : `Day ${morningProgress + 1}부터 이어보기 가능`}
+                  </p>
+                )}
               </div>
             </div>
 
             <button
               type="button"
-              className="w-full py-3 px-4 bg-emerald-700 group-hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-2xl transition-colors flex items-center justify-center gap-1.5 shadow-xs"
+              className="w-full py-3 px-4 bg-amber-600 group-hover:bg-amber-700 text-white text-xs sm:text-sm font-bold rounded-2xl transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
             >
               <span>모닝위생 교육 시작</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -206,7 +204,7 @@ export const CategoryHome: React.FC<CategoryHomeProps> = ({
           {/* Card 3: 모닝위생_신규(일) */}
           <div
             onClick={() => onSelectCategory('morning-new')}
-            className="group relative bg-white rounded-3xl p-6 border-2 border-slate-200 hover:border-blue-500 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col justify-between"
+            className="group relative bg-white rounded-3xl p-6 border-2 border-blue-200 hover:border-blue-400 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -273,61 +271,7 @@ export const CategoryHome: React.FC<CategoryHomeProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Online Food Hygiene Quiz Section */}
-      <section className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-xs">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-start sm:items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-100">
-              <HelpCircle className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-slate-900">
-                조리종사자 온라인 위생교육 퀴즈
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                교육 후 스마트폰 QR 또는 버튼을 통해 위생 퀴즈를 직접 풀어볼 수 있습니다.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <button
-              type="button"
-              onClick={() => setShowQuizQr((prev) => !prev)}
-              className="flex-1 sm:flex-initial px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <QrCode className="w-4 h-4" />
-              <span>QR 코드 {showQuizQr ? '닫기' : '보기'}</span>
-            </button>
-
-            <a
-              href={quizUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 sm:flex-initial px-4 py-2.5 bg-[#527765] hover:bg-[#436353] text-white font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-xs"
-            >
-              <span>퀴즈 바로가기</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
-        </div>
-
-        {/* QR Code expansion */}
-        {showQuizQr && (
-          <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col items-center justify-center">
-            <div className="p-3 bg-white rounded-2xl border-2 border-slate-200 shadow-xs mb-2">
-              <img
-                src={quizQrImageUrl}
-                alt="위생퀴즈 접속 QR코드"
-                className="w-44 h-44 object-contain rounded-lg"
-              />
-            </div>
-            <p className="text-xs text-slate-600 font-semibold">스마트폰 카메라로 스캔하여 퀴즈 풀기</p>
-            <p className="text-[11px] text-slate-400 font-mono mt-0.5">{quizUrl}</p>
-          </div>
-        )}
-      </section>
     </div>
   );
 };
+

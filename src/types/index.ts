@@ -76,6 +76,25 @@ export interface PrintCard {
   title: string;
 }
 
+export type MorningCourseId = 'morning' | 'morning-new';
+
+export interface MorningRecord {
+  day: number;
+  date: string; // YYYY-MM-DD
+  title: string;
+  image?: string;
+  formattedDate?: string;
+}
+
+export type MorningNewRecord = MorningRecord;
+
+export interface MorningProgressData {
+  progress: number;
+  records: MorningRecord[];
+}
+
+export type MorningNewProgressData = MorningProgressData;
+
 export interface BackupData {
   version: number;
   appName?: string;
@@ -87,19 +106,9 @@ export interface BackupData {
     quizQrUrl?: string;
   };
   morningProgress?: number;
+  morningRecords?: MorningRecord[];
+  morningData?: MorningProgressData;
   morningNewProgress?: number;
-  morningNewData?: MorningNewProgressData;
-}
-
-export interface MorningNewRecord {
-  day: number;
-  date: string; // YYYY-MM-DD
-  title: string;
-  image?: string;
-  formattedDate?: string;
-}
-
-export interface MorningNewProgressData {
-  progress: number;
-  records: MorningNewRecord[];
+  morningNewRecords?: MorningRecord[];
+  morningNewData?: MorningProgressData;
 }

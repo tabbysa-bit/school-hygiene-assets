@@ -1,6 +1,7 @@
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { getMorningNewImageUrl } from '../config/assets';
+import { getMorningImageUrl, getMorningNewImageUrl } from '../config/assets';
+import { MorningCourseId } from '../types';
 
 export interface MorningNewPdfRecord {
   day: number;
@@ -10,7 +11,9 @@ export interface MorningNewPdfRecord {
   formattedDate?: string;
 }
 
-export interface MorningNewPdfOptions {
+export interface MorningPdfOptions {
+  courseId?: MorningCourseId | string;
+  courseName?: string;
   year: number;
   month: number;
   records: MorningNewPdfRecord[];
@@ -20,6 +23,8 @@ export interface MorningNewPdfOptions {
   };
   includeMaterials?: boolean;
 }
+
+export type MorningNewPdfOptions = MorningPdfOptions;
 
 export interface PdfGenerationResult {
   success: boolean;
@@ -147,12 +152,9 @@ function createLogPageElement(options: MorningNewPdfOptions): HTMLElement {
 
   container.innerHTML = `
     <div style="text-align: center; margin-bottom: 22px;">
-      <h1 style="font-size: 25px; font-weight: 800; letter-spacing: -0.5px; margin: 0 0 4px 0; color: #0f172a;">
+      <h1 style="font-size: 25px; font-weight: 800; letter-spacing: -0.5px; margin: 0; color: #0f172a;">
         ${year}년 ${month}월 위생교육 실시기록
       </h1>
-      <div style="font-size: 12px; color: #475569; font-weight: 500;">
-        ( 모닝위생 신규과정 )
-      </div>
     </div>
 
     <!-- Metadata Section -->
@@ -302,21 +304,27 @@ function createEvidencePageElement(
 }
 
 /**
- * Generates and downloads the Morning Hygiene (신규) Monthly Education Log as a direct PDF file.
+ * Generates and downloads the Morning Hygiene Monthly Education Log as a direct PDF file.
+ * Common implementation for both 'morning' and 'morning-new'.
  */
-export async function generateMorningNewMonthlyPdf(
-  options: MorningNewPdfOptions
+export async function generateMorningMonthlyPdf(
+  options: MorningPdfOptions
 ): Promise<PdfGenerationResult> {
-  const { year, month, records, includeMaterials } = options;
+  const { year, month, records, includeMaterials, courseId } = options;
 
   if (!records || records.length === 0) {
     throw new Error(`${year}년 ${month}월에 기록된 교육이 없습니다.`);
   }
 
+  const coursePrefix = options.courseName
+    ? options.courseName.replace(/[/\\?%*:|"<>_()]/g, '')
+    : courseId === 'morning'
+    ? '모닝위생'
+    : '모닝위생신규';
   const monthStr = String(month).padStart(2, '0');
   const baseName = includeMaterials
-    ? `${year}년${monthStr}월_모닝위생신규_교육자료포함`
-    : `${year}년${monthStr}월_모닝위생신규_교육일지`;
+    ? `${year}년${monthStr}월_${coursePrefix}_교육자료포함`
+    : `${year}년${monthStr}월_${coursePrefix}_교육일지`;
   const sanitizedFileName = `${baseName.replace(/[/\\?%*:|"<>]/g, '')}.pdf`;
 
   // Hidden off-screen staging container
@@ -384,7 +392,7 @@ export async function generateMorningNewMonthlyPdf(
       }> = [];
 
       for (const card of uniqueCards) {
-        const imageUrl = getMorningNewImageUrl(card.image || card.day);
+        const imageUrl = getMorningImageUrl(courseId || 'morning-new', card.image || card.day);
         const dataUrl = await fetchImageDataUrl(imageUrl);
         if (!dataUrl) {
           failedImages.push(`Day ${card.day} (${card.title})`);
@@ -440,3 +448,7 @@ export async function generateMorningNewMonthlyPdf(
     }
   }
 }
+
+// Backward-compatible alias for existing callers
+export const generateMorningNewMonthlyPdf = generateMorningMonthlyPdf;
+

@@ -7,7 +7,10 @@ import {
 } from '../types';
 import { APPENDIX_DATA, DEFAULT_MONTHLY_MATERIALS } from './defaultMaterials';
 import morningNewJson from '../data/morning-new.json';
-import { getAssetUrl, getMorningNewImageUrl, DEFAULT_QUIZ_URL } from '../config/assets';
+import morningJson from '../data/morning.json';
+import { getMealSafetyVideo } from '../data/mealSafetyVideos';
+import { getAssetUrl, getMealSafetyImagePath, getMorningImageUrl, getMorningNewImageUrl, DEFAULT_QUIZ_URL } from '../config/assets';
+import { MORNING_PROGRAMS, MorningCourseId } from '../config/morningPrograms';
 import {
   getQuizUrl as storageGetQuizUrl,
   saveQuizUrl as storageSaveQuizUrl,
@@ -66,8 +69,7 @@ export const contentService = {
 
   /**
    * Gets materials for a specific month (lazy loaded per month).
-   * Note: Meal safety images are not yet deployed to Cloudflare, so imageUrl is set to empty
-   * to avoid 404 network requests and cleanly show the preparation state.
+   * Generates Cloudflare image URL via ASSET_BASE_URL + imagePath.
    */
   async getMonthMaterials(month: EducationMonth): Promise<MonthMaterialData> {
     const defaultData = DEFAULT_MONTHLY_MATERIALS[month];
@@ -78,38 +80,61 @@ export const contentService = {
       const materials: MaterialItem[] = (monthData.materials || []).map(
         (item: any, idx: number) => {
           const fallbackItem = defaultData?.materials?.[idx];
+          const page = item.page || idx + 1;
+          const imagePath = item.imagePath || getMealSafetyImagePath(month, page);
           return {
             id: item.id || `m${month}_${idx + 1}`,
-            page: item.page || idx + 1,
+            page,
             title: item.title,
             subtitle: item.subtitle,
-            imagePath: item.imagePath,
-            imageUrl: '', // Preparation state (no 404s)
+            imagePath,
+            imageUrl: getAssetUrl(imagePath),
             summaryPoints: item.summaryPoints || fallbackItem?.summaryPoints || [],
             visible: true
           };
         }
       );
 
+      const videoConfig = getMealSafetyVideo(month);
       return {
         month,
         title: monthData.title || defaultData.title,
-        materials: materials.length > 0 ? materials : defaultData.materials.map(m => ({ ...m, imageUrl: '' })),
-        videoUrl: monthData.videoUrl || defaultData.videoUrl,
-        videoTitle: monthData.videoTitle || defaultData.videoTitle,
-        videoQrUrl: monthData.videoQrUrl || defaultData.videoQrUrl
+        materials: materials.length > 0 ? materials : (defaultData?.materials || []).map((m, idx) => {
+          const page = m.page || idx + 1;
+          const imagePath = m.imagePath || getMealSafetyImagePath(month, page);
+          return {
+            ...m,
+            imagePath,
+            imageUrl: getAssetUrl(imagePath)
+          };
+        }),
+        videoUrl: videoConfig.youtubeUrl || '',
+        videoTitle: videoConfig.title,
+        videoQrUrl: undefined
       };
     }
 
+    const videoConfig = getMealSafetyVideo(month);
     return {
       ...defaultData,
-      materials: (defaultData?.materials || []).map(m => ({ ...m, imageUrl: '' }))
+      materials: (defaultData?.materials || []).map((m, idx) => {
+        const page = m.page || idx + 1;
+        const imagePath = m.imagePath || getMealSafetyImagePath(month, page);
+        return {
+          ...m,
+          imagePath,
+          imageUrl: getAssetUrl(imagePath)
+        };
+      }),
+      videoUrl: videoConfig.youtubeUrl || '',
+      videoTitle: videoConfig.title,
+      videoQrUrl: undefined
     };
   },
 
   /**
    * Gets appendix category materials (lazy loaded on demand).
-   * Note: Appendix images are not yet deployed to Cloudflare.
+   * Resolves Cloudflare image URL via ASSET_BASE_URL + imagePath.
    */
   async getAppendixGroup(groupKey: 'foodborne' | 'ccpcp' | string): Promise<AppendixGroup> {
     if (appendixSessionCache[groupKey]) {
@@ -124,13 +149,16 @@ export const contentService = {
       const materials: MaterialItem[] = (appData.materials || []).map(
         (item: any, idx: number) => {
           const fallbackItem = defaultGroup?.materials?.[idx];
+          const page = item.page || idx + 1;
+          const pageStr = String(page).padStart(2, '0');
+          const imagePath = item.imagePath || `/assets/meal-safety/${groupKey}/page${pageStr}.webp`;
           return {
             id: item.id || `${groupKey}_${idx + 1}`,
-            page: item.page || idx + 1,
+            page,
             title: item.title,
             subtitle: item.subtitle,
-            imagePath: item.imagePath,
-            imageUrl: '', // Preparation state (no 404s)
+            imagePath,
+            imageUrl: getAssetUrl(imagePath),
             summaryPoints: item.summaryPoints || fallbackItem?.summaryPoints || [],
             visible: true
           };
@@ -141,7 +169,16 @@ export const contentService = {
         key: groupKey,
         title: appData.title || defaultGroup?.title || '',
         description: appData.description || defaultGroup?.description || '',
-        materials: materials.length > 0 ? materials : (defaultGroup?.materials || []).map(m => ({ ...m, imageUrl: '' }))
+        materials: materials.length > 0 ? materials : (defaultGroup?.materials || []).map((m, idx) => {
+          const page = m.page || idx + 1;
+          const pageStr = String(page).padStart(2, '0');
+          const imagePath = m.imagePath || `/assets/meal-safety/${groupKey}/page${pageStr}.webp`;
+          return {
+            ...m,
+            imagePath,
+            imageUrl: getAssetUrl(imagePath)
+          };
+        })
       };
 
       appendixSessionCache[groupKey] = result;
@@ -151,7 +188,16 @@ export const contentService = {
     if (defaultGroup) {
       const result = {
         ...defaultGroup,
-        materials: defaultGroup.materials.map(m => ({ ...m, imageUrl: '' }))
+        materials: defaultGroup.materials.map((m, idx) => {
+          const page = m.page || idx + 1;
+          const pageStr = String(page).padStart(2, '0');
+          const imagePath = m.imagePath || `/assets/meal-safety/${groupKey}/page${pageStr}.webp`;
+          return {
+            ...m,
+            imagePath,
+            imageUrl: getAssetUrl(imagePath)
+          };
+        })
       };
       appendixSessionCache[groupKey] = result;
       return result;
@@ -161,25 +207,50 @@ export const contentService = {
   },
 
   /**
+   * Loads materials for any Morning Hygiene program by courseId ('morning' | 'morning-new').
+   */
+  async getCourseMaterials(courseId: MorningCourseId = 'morning-new'): Promise<MorningMaterialItem[]> {
+    if (courseId === 'morning') {
+      return this.getMorningMaterials();
+    }
+    return this.getMorningNewMaterials();
+  },
+
+  /**
    * Gets all 190 days materials for regular Morning Hygiene.
-   * Note: Regular morning images are not yet deployed to Cloudflare.
+   * Controlled by MORNING_PROGRAMS.morning.enabled.
    */
   async getMorningMaterials(): Promise<MorningMaterialItem[]> {
     if (cachedMorning) return cachedMorning;
+    const program = MORNING_PROGRAMS.morning;
+    let list: any[] = [];
     try {
-      const res = await fetch('/data/morning.json');
+      const res = await fetch(program.dataSource);
       if (res.ok) {
         const json = await res.json();
-        cachedMorning = (json.materials || []).map((m: any) => ({
-          ...m,
-          imageUrl: '' // Preparation state (no 404s)
-        }));
-        return cachedMorning!;
+        list = Array.isArray(json) ? json : (json.materials || []);
       }
     } catch (e) {
-      console.warn('Failed to fetch /data/morning.json', e);
+      console.warn('Failed to fetch /data/morning.json, using bundled data', e);
     }
-    return [];
+    if (!list || list.length === 0) {
+      list = (morningJson as any).materials || [];
+    }
+
+    cachedMorning = list.map((m: any) => {
+      const day = Number(m.day);
+      const pad = String(day).padStart(3, '0');
+      const imageFileName = m.image || `day${pad}.webp`;
+      return {
+        id: `morn_day${pad}`,
+        day: day,
+        dayCode: `Day${pad}`,
+        title: (m.title || '').trim(),
+        image: imageFileName,
+        imageUrl: getMorningImageUrl(program.assetPrefix, imageFileName)
+      };
+    });
+    return cachedMorning;
   },
 
   /**
@@ -189,9 +260,10 @@ export const contentService = {
    */
   async getMorningNewMaterials(): Promise<MorningMaterialItem[]> {
     if (cachedMorningNew) return cachedMorningNew;
+    const program = MORNING_PROGRAMS['morning-new'];
     let list: any[] = [];
     try {
-      const res = await fetch('/data/morning-new.json');
+      const res = await fetch(program.dataSource);
       if (res.ok) {
         const json = await res.json();
         list = Array.isArray(json) ? json : (json.materials || []);
@@ -213,7 +285,7 @@ export const contentService = {
         dayCode: `Day${pad}`,
         title: (m.title || '').trim(),
         image: imageFileName,
-        imageUrl: getMorningNewImageUrl(imageFileName)
+        imageUrl: getMorningImageUrl(program.assetPrefix, imageFileName)
       };
     });
     return cachedMorningNew;

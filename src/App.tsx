@@ -590,7 +590,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen text-[#263238] font-sans">
+    <div className="min-h-screen text-[#172033] font-sans">
       <div className="max-w-[920px] mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
         <Header
@@ -620,7 +620,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => handleSelectTab('home')}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#64748B] hover:text-[#172033] transition-colors cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 전체 카테고리로
@@ -668,12 +668,12 @@ export default function App() {
             />
 
             {/* Appendix Section (Lazy loading) */}
-            <section className="mt-12 pt-8 border-t-2 border-[#e3e9ec]">
+            <section className="mt-12 pt-8 border-t border-[#E5EDE9]">
               <div className="mb-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
+                <h2 className="text-xl sm:text-2xl font-bold text-[#172033] tracking-tight">
                   부록 · 추가 위생교육
                 </h2>
-                <p className="text-xs sm:text-sm text-[#708087] mt-1 leading-relaxed">
+                <p className="text-xs sm:text-sm text-[#64748B] mt-1 leading-relaxed">
                   필요한 경우 자료를 선택하여 추가 위생교육에 활용하세요. (각 낱장별로 {currentMonth}월 교육기록에 개별 추가됩니다.)
                 </p>
               </div>
@@ -699,9 +699,7 @@ export default function App() {
         {/* Tab 2: 모닝위생(일) */}
         {activeTab === 'morning' && (
           <MorningEducation
-            type="regular"
-            title="모닝위생(일)"
-            badge="조리 전 3분 일일 교육"
+            courseId="morning"
             materials={morningMaterials}
             isLoading={isLoadingMorning}
             currentProgress={morningProgress}
@@ -713,9 +711,7 @@ export default function App() {
         {/* Tab 3: 모닝위생_신규(일) */}
         {activeTab === 'morning-new' && (
           <MorningEducation
-            type="new"
-            title="모닝위생_신규(일)"
-            badge="신규 맞춤 집중과정"
+            courseId="morning-new"
             materials={morningNewMaterials}
             isLoading={isLoadingMorningNew}
             currentProgress={morningNewProgress}

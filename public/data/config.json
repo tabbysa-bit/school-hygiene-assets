@@ -2,7 +2,7 @@
   "serviceTitle": "학교급식종사자 위생교육",
   "tagline": "위생은 꼼꼼하게, 급식은 당당하게!",
   "assetBaseUrl": "https://school-hygiene-assets.pages.dev",
-  "quizUrl": "https://foodhygiene.netlify.app/",
+  "quizUrl": "https://thtkssla.github.io/foodhygiene/",
   "totalMorningDays": 190,
   "categories": [
     {
@@ -31,62 +31,62 @@
     {
       "id": "v-03",
       "month": 3,
-      "title": "3월 신학기 조리종사자 개인위생관리 및 올바른 손씻기 6단계",
-      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "title": "3월 신학기 개인위생 및 올바른 손씻기",
+      "youtubeUrl": "https://youtu.be/H1xnT94bCB4"
     },
     {
       "id": "v-04",
       "month": 4,
-      "title": "4월 식재료 검수 및 CCP1 검수공정 관리",
-      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "title": "4월 학교급식 HACCP 시스템",
+      "youtubeUrl": "https://youtu.be/TjoPXEtqeKc"
     },
     {
       "id": "v-05",
       "month": 5,
-      "title": "5월 식재료 세척 및 소독공정(유효염소농도 100ppm 준수)",
-      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "title": "5월 식재료 검수 및 보관 준수사항",
+      "youtubeUrl": "https://youtu.be/6mV9-6Z5vyg"
     },
     {
       "id": "v-06",
       "month": 6,
-      "title": "6월 가열조리공정 및 중심온도(85℃ 1분이상) 측정관리",
-      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "title": "6월 교차오염 예방 및 구분 사용",
+      "youtubeUrl": "https://youtu.be/FjP99yKCT5I"
     },
     {
       "id": "v-07",
       "month": 7,
-      "title": "7월 조리 후 배식 위생관리 및 보온·보냉 배식온도 준수",
-      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "title": "7월 급식기구 위생 관리",
+      "youtubeUrl": "https://youtu.be/HD3f890I0q8"
     },
     {
       "id": "v-09",
       "month": 9,
-      "title": "9월 가을철 환절기 살모넬라 등 식중독 예방 및 기구소독",
-      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "title": "9월 이물질 관리 및 신고절차",
+      "youtubeUrl": "https://youtu.be/kjlDDQKIB08"
     },
     {
       "id": "v-10",
       "month": 10,
-      "title": "10월 교차오염 방지(칼·도마·고무장갑 공정별 구분사용)",
-      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "title": "10월 안전한 해동 및 전처리 준수사항",
+      "youtubeUrl": "https://youtu.be/CaLhzn6cjUw"
     },
     {
       "id": "v-11",
       "month": 11,
-      "title": "11월 겨울철 노로바이러스 식중독 예방 및 소독약 제조법",
-      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "title": "11월 소독과 가열",
+      "youtubeUrl": "https://youtu.be/m7pOms7ZmAg"
     },
     {
       "id": "v-12",
       "month": 12,
-      "title": "12월 조리실 환기시설 배기후드 청결관리 및 안전점검",
-      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "title": "12월 검식 및 보존식 및 배식 관리",
+      "youtubeUrl": "https://youtu.be/h3ddJCvTGM0"
     },
     {
       "id": "v-02",
       "month": 2,
-      "title": "2월 학년말 급식시설·설비 총괄 대청소 및 개학 준비",
-      "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "title": "2월 환경 위생 관리",
+      "youtubeUrl": "https://youtu.be/kVpRd8KSkNc"
     }
   ]
 }

@@ -7,9 +7,11 @@
 export const EDUCATION_RECORDS_KEY = 'monthlyHygieneRecords_v1';
 export const SCHOOL_SETTINGS_KEY = 'monthlyHygieneSchoolSettings_v1';
 export const APP_SETTINGS_KEY = 'monthlyHygieneAppSettings_v1';
-export const MORNING_PROGRESS_KEY = 'morningProgress_v1';
+export const MORNING_PROGRESS_KEY = 'morningProgress';
+export const MORNING_RECORDS_KEY = 'morningRecords';
 export const MORNING_NEW_PROGRESS_KEY = 'morningNewProgress';
-export const DEFAULT_QUIZ_URL = 'https://foodhygiene.netlify.app/';
+export const MORNING_NEW_RECORDS_KEY = 'morningNewRecords';
+export const DEFAULT_QUIZ_URL = 'https://thtkssla.github.io/foodhygiene/';
 
 /**
  * Helper to simulate brief async tick for database consistency
@@ -212,7 +214,11 @@ export async function getQuizUrl() {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed.quizUrl && typeof parsed.quizUrl === 'string' && parsed.quizUrl.trim()) {
-        return parsed.quizUrl.trim();
+        const trimmed = parsed.quizUrl.trim();
+        if (trimmed.includes('netlify.app')) {
+          return DEFAULT_QUIZ_URL;
+        }
+        return trimmed;
       }
     }
   } catch (error) {
@@ -291,41 +297,26 @@ export async function getQuizSettings() {
 // ==========================================
 // 4. Morning Hygiene Progress Service (async)
 // ==========================================
+// 4. Morning Hygiene Service (Course-aware, Async)
+// ==========================================
 
 /**
- * Gets the current progress Day for regular Morning Hygiene (1 ~ 190).
- * Defaults to 0 (meaning not yet started).
- * @returns {Promise<number>}
+ * Resolves storage keys for a given course ('morning' | 'morning-new').
+ * @param {'morning' | 'morning-new' | string} courseId
  */
-export async function getMorningProgress() {
-  await delay();
-  try {
-    const raw = localStorage.getItem(MORNING_PROGRESS_KEY);
-    if (raw !== null && raw !== undefined) {
-      const val = parseInt(raw, 10);
-      if (!isNaN(val) && val >= 0) return val;
-    }
-  } catch (error) {
-    console.error('[storage] Failed to get morning progress:', error);
+function getCourseKeys(courseId) {
+  if (courseId === 'morning-new' || courseId === 'new') {
+    return {
+      progressKey: MORNING_NEW_PROGRESS_KEY,
+      recordsKey: MORNING_NEW_RECORDS_KEY,
+      legacyKey: 'morningNewProgress_v1'
+    };
   }
-  return 0;
-}
-
-/**
- * Saves the progress Day for regular Morning Hygiene.
- * @param {number} day
- * @returns {Promise<number>}
- */
-export async function setMorningProgress(day) {
-  await delay();
-  try {
-    const safeDay = Math.max(0, Math.min(190, parseInt(day, 10) || 0));
-    localStorage.setItem(MORNING_PROGRESS_KEY, String(safeDay));
-    return safeDay;
-  } catch (error) {
-    console.error('[storage] Failed to save morning progress:', error);
-    throw new Error('모닝위생 진행상황 저장에 실패했습니다.');
-  }
+  return {
+    progressKey: MORNING_PROGRESS_KEY,
+    recordsKey: MORNING_RECORDS_KEY,
+    legacyKey: 'morningProgress_v1'
+  };
 }
 
 /**
@@ -340,69 +331,68 @@ export function getTodayDateString() {
 }
 
 /**
- * Gets the full state for Morning Hygiene [New Recruits].
- * Returns { progress: number, records: Array<{ day: number, date: string, title: string }> }
- * Supports backward compatibility with primitive number strings.
- * @returns {Promise<{ progress: number, records: Array<{ day: number, date: string, title: string }> }>}
+ * Gets the full state for a given morning course.
+ * Returns { progress: number, records: Array<{ day: number, date: string, title: string, image?: string }> }
+ * Completely isolated per course.
+ * @param {'morning' | 'morning-new'} [courseId='morning-new']
+ * @returns {Promise<{ progress: number, records: Array<{ day: number, date: string, title: string, image?: string }> }>}
  */
-export async function getMorningNewData() {
+export async function getMorningData(courseId = 'morning-new') {
   await delay();
+  const { progressKey, recordsKey, legacyKey } = getCourseKeys(courseId);
   try {
-    const raw = localStorage.getItem(MORNING_NEW_PROGRESS_KEY) ?? localStorage.getItem('morningNewProgress_v1');
-    if (!raw) {
-      return { progress: 0, records: [] };
+    let progress = 0;
+    let records = [];
+
+    // 1. Try reading records from dedicated records key
+    const recordsRaw = localStorage.getItem(recordsKey);
+    if (recordsRaw) {
+      try {
+        const parsed = JSON.parse(recordsRaw);
+        if (Array.isArray(parsed)) records = parsed;
+      } catch (e) {
+        console.warn(`[storage] Could not parse records for ${courseId}:`, e);
+      }
     }
-    const trimmed = raw.trim();
-    if (trimmed.startsWith('{')) {
-      const parsed = JSON.parse(trimmed);
-      return {
-        progress: Math.max(0, Math.min(190, parseInt(parsed.progress, 10) || 0)),
-        records: Array.isArray(parsed.records) ? parsed.records : []
-      };
+
+    // 2. Try reading progressKey or legacyKey
+    const raw = localStorage.getItem(progressKey) ?? (legacyKey ? localStorage.getItem(legacyKey) : null);
+    if (raw) {
+      const trimmed = raw.trim();
+      if (trimmed.startsWith('{')) {
+        const parsed = JSON.parse(trimmed);
+        progress = Math.max(0, Math.min(190, parseInt(parsed.progress, 10) || 0));
+        if (records.length === 0 && Array.isArray(parsed.records)) {
+          records = parsed.records;
+        }
+      } else {
+        const val = parseInt(trimmed, 10);
+        if (!isNaN(val) && val >= 0) {
+          progress = Math.min(190, val);
+        }
+      }
     }
-    const val = parseInt(trimmed, 10);
-    if (!isNaN(val) && val >= 0) {
-      return { progress: Math.min(190, val), records: [] };
-    }
+
+    return { progress, records };
   } catch (error) {
-    console.error('[storage] Failed to get morning new data:', error);
+    console.error(`[storage] Failed to get morning data for ${courseId}:`, error);
   }
   return { progress: 0, records: [] };
 }
 
 /**
- * Gets the current progress Day for Morning Hygiene [New Recruits] (0 ~ 190).
- * Defaults to 0 (meaning not yet started).
- * Completely separate from regular morning progress.
- * @returns {Promise<number>}
- */
-export async function getMorningNewProgress() {
-  const data = await getMorningNewData();
-  return data.progress;
-}
-
-/**
- * Gets completed education records for Morning Hygiene [New Recruits].
- * @returns {Promise<Array<{ day: number, date: string, title: string }>>}
- */
-export async function getMorningNewRecords() {
-  const data = await getMorningNewData();
-  return data.records;
-}
-
-/**
- * Records completion of a specific Day in Morning Hygiene [New Recruits].
- * Saves { day, date, title } into records array without duplicate Day entries.
- * Updates progress to Math.max(progress, day).
+ * Records completion of a specific Day in a morning course.
+ * Saves { day, date, title } without duplicates and updates progress.
+ * @param {'morning' | 'morning-new'} courseId
  * @param {number} day
  * @param {string} title
  * @param {string} [date]
- * @returns {Promise<{ isAlreadyCompleted: boolean, data: { progress: number, records: Array<{ day: number, date: string, title: string }> }, existingRecord?: { day: number, date: string, title: string } }>}
  */
-export async function completeMorningNewDay(day, title, date) {
+export async function completeMorningDay(courseId, day, title, date) {
   await delay();
+  const { progressKey, recordsKey, legacyKey } = getCourseKeys(courseId);
   try {
-    const current = await getMorningNewData();
+    const current = await getMorningData(courseId);
     const safeDay = Math.max(1, Math.min(190, parseInt(day, 10) || 1));
     const recordDate = date || getTodayDateString();
 
@@ -426,61 +416,72 @@ export async function completeMorningNewDay(day, title, date) {
       records: newRecords
     };
 
-    const jsonStr = JSON.stringify(updatedData);
-    localStorage.setItem(MORNING_NEW_PROGRESS_KEY, jsonStr);
-    localStorage.setItem('morningNewProgress_v1', jsonStr);
+    localStorage.setItem(recordsKey, JSON.stringify(newRecords));
+    localStorage.setItem(progressKey, JSON.stringify(updatedData));
+    if (courseId === 'morning') {
+      localStorage.setItem('morningProgress', String(newProgress));
+    }
+    if (legacyKey) {
+      localStorage.setItem(legacyKey, JSON.stringify(updatedData));
+    }
 
     return {
       isAlreadyCompleted: false,
       data: updatedData
     };
   } catch (error) {
-    console.error('[storage] Failed to complete morning new day:', error);
-    throw new Error('모닝위생(신규) 교육완료 저장에 실패했습니다.');
+    console.error(`[storage] Failed to complete day for ${courseId}:`, error);
+    throw new Error('교육완료 저장에 실패했습니다.');
   }
 }
 
 /**
- * Saves the progress Day for Morning Hygiene [New Recruits].
- * Synchronizes records by removing any records where day > safeDay.
- * Completely separate from regular morning progress.
+ * Saves the progress Day for a morning course.
+ * Synchronizes records by removing records beyond the new progress.
+ * @param {'morning' | 'morning-new'} courseId
  * @param {number} day
  * @returns {Promise<number>}
  */
-export async function setMorningNewProgress(day) {
+export async function setMorningCourseProgress(courseId, day) {
   await delay();
+  const { progressKey, recordsKey, legacyKey } = getCourseKeys(courseId);
   try {
-    const current = await getMorningNewData();
+    const current = await getMorningData(courseId);
     const safeDay = Math.max(0, Math.min(190, parseInt(day, 10) || 0));
 
-    // Remove any records beyond the new progress
     const updatedRecords = current.records.filter((r) => r.day <= safeDay);
     const updatedData = {
       progress: safeDay,
       records: updatedRecords
     };
 
-    const jsonStr = JSON.stringify(updatedData);
-    localStorage.setItem(MORNING_NEW_PROGRESS_KEY, jsonStr);
-    localStorage.setItem('morningNewProgress_v1', jsonStr);
+    localStorage.setItem(recordsKey, JSON.stringify(updatedRecords));
+    localStorage.setItem(progressKey, JSON.stringify(updatedData));
+    if (courseId === 'morning') {
+      localStorage.setItem('morningProgress', String(safeDay));
+    }
+    if (legacyKey) {
+      localStorage.setItem(legacyKey, JSON.stringify(updatedData));
+    }
+
     return safeDay;
   } catch (error) {
-    console.error('[storage] Failed to save morning new progress:', error);
-    throw new Error('모닝위생(신규) 진행상황 저장에 실패했습니다.');
+    console.error(`[storage] Failed to save progress for ${courseId}:`, error);
+    throw new Error('진행상황 저장에 실패했습니다.');
   }
 }
 
 /**
- * Updates the date of an existing Morning Hygiene [New Recruits] record.
- * Does NOT alter progress.
+ * Updates the date of an existing record for a course without altering progress.
+ * @param {'morning' | 'morning-new'} courseId
  * @param {number} day
- * @param {string} newDate - YYYY-MM-DD
- * @returns {Promise<{ progress: number, records: Array<{ day: number, date: string, title: string, image?: string }> }>}
+ * @param {string} newDate
  */
-export async function updateMorningNewRecordDate(day, newDate) {
+export async function updateMorningRecordDate(courseId, day, newDate) {
   await delay();
+  const { progressKey, recordsKey, legacyKey } = getCourseKeys(courseId);
   try {
-    const current = await getMorningNewData();
+    const current = await getMorningData(courseId);
     const safeDay = parseInt(day, 10);
     const updatedRecords = current.records.map((r) => {
       if (r.day === safeDay) {
@@ -494,26 +495,29 @@ export async function updateMorningNewRecordDate(day, newDate) {
       records: updatedRecords
     };
 
-    const jsonStr = JSON.stringify(updatedData);
-    localStorage.setItem(MORNING_NEW_PROGRESS_KEY, jsonStr);
-    localStorage.setItem('morningNewProgress_v1', jsonStr);
+    localStorage.setItem(recordsKey, JSON.stringify(updatedRecords));
+    localStorage.setItem(progressKey, JSON.stringify(updatedData));
+    if (legacyKey) {
+      localStorage.setItem(legacyKey, JSON.stringify(updatedData));
+    }
+
     return updatedData;
   } catch (error) {
-    console.error('[storage] Failed to update morning new record date:', error);
-    throw new Error('모닝위생(신규) 교육일 수정에 실패했습니다.');
+    console.error(`[storage] Failed to update date for ${courseId}:`, error);
+    throw new Error('교육일 수정에 실패했습니다.');
   }
 }
 
 /**
- * Deletes an individual Morning Hygiene [New Recruits] record.
- * As per policy: Does NOT automatically rewind/alter progress.
+ * Deletes an individual record in a given course without rewinding progress.
+ * @param {'morning' | 'morning-new'} courseId
  * @param {number} day
- * @returns {Promise<{ progress: number, records: Array<{ day: number, date: string, title: string, image?: string }> }>}
  */
-export async function deleteMorningNewRecord(day) {
+export async function deleteMorningRecord(courseId, day) {
   await delay();
+  const { progressKey, recordsKey, legacyKey } = getCourseKeys(courseId);
   try {
-    const current = await getMorningNewData();
+    const current = await getMorningData(courseId);
     const safeDay = parseInt(day, 10);
     const updatedRecords = current.records.filter((r) => r.day !== safeDay);
 
@@ -522,30 +526,32 @@ export async function deleteMorningNewRecord(day) {
       records: updatedRecords
     };
 
-    const jsonStr = JSON.stringify(updatedData);
-    localStorage.setItem(MORNING_NEW_PROGRESS_KEY, jsonStr);
-    localStorage.setItem('morningNewProgress_v1', jsonStr);
+    localStorage.setItem(recordsKey, JSON.stringify(updatedRecords));
+    localStorage.setItem(progressKey, JSON.stringify(updatedData));
+    if (legacyKey) {
+      localStorage.setItem(legacyKey, JSON.stringify(updatedData));
+    }
+
     return updatedData;
   } catch (error) {
-    console.error('[storage] Failed to delete morning new record:', error);
-    throw new Error('모닝위생(신규) 교육기록 삭제에 실패했습니다.');
+    console.error(`[storage] Failed to delete record for ${courseId}:`, error);
+    throw new Error('교육기록 삭제에 실패했습니다.');
   }
 }
 
 /**
- * Extracts morning new records for a given year & month (e.g. 2026, 9 -> 2026-09)
- * for monthly education log generation and viewing.
+ * Extracts morning records for a given course filtered by year and month.
+ * @param {'morning' | 'morning-new'} courseId
  * @param {number | string} year
  * @param {number | string} month
- * @returns {Promise<Array<{ day: number, date: string, title: string, image: string, formattedDate: string }>>}
  */
-export async function getMorningNewRecordsByMonth(year, month) {
-  const data = await getMorningNewData();
+export async function getMorningRecordsByMonth(courseId, year, month) {
+  const data = await getMorningData(courseId);
   const yStr = String(year);
   const mStr = String(month).padStart(2, '0');
   const prefix = `${yStr}-${mStr}`;
 
-  return data.records
+  return (data.records || [])
     .filter((r) => r.date && r.date.startsWith(prefix))
     .sort((a, b) => a.date.localeCompare(b.date) || a.day - b.day)
     .map((r) => {
@@ -562,6 +568,58 @@ export async function getMorningNewRecordsByMonth(year, month) {
     });
 }
 
+// ----------------------------------------------------
+// Backwards-compatible aliases for morning-new & morning
+// ----------------------------------------------------
+
+export async function getMorningProgress() {
+  const d = await getMorningData('morning');
+  return d.progress;
+}
+
+export async function setMorningProgress(day) {
+  return setMorningCourseProgress('morning', day);
+}
+
+export async function getMorningRecords() {
+  const d = await getMorningData('morning');
+  return d.records;
+}
+
+export async function getMorningNewData() {
+  return getMorningData('morning-new');
+}
+
+export async function getMorningNewProgress() {
+  const d = await getMorningData('morning-new');
+  return d.progress;
+}
+
+export async function getMorningNewRecords() {
+  const d = await getMorningData('morning-new');
+  return d.records;
+}
+
+export async function completeMorningNewDay(day, title, date) {
+  return completeMorningDay('morning-new', day, title, date);
+}
+
+export async function setMorningNewProgress(day) {
+  return setMorningCourseProgress('morning-new', day);
+}
+
+export async function updateMorningNewRecordDate(day, newDate) {
+  return updateMorningRecordDate('morning-new', day, newDate);
+}
+
+export async function deleteMorningNewRecord(day) {
+  return deleteMorningRecord('morning-new', day);
+}
+
+export async function getMorningNewRecordsByMonth(year, month) {
+  return getMorningRecordsByMonth('morning-new', year, month);
+}
+
 // ==========================================
 // 5. Backup & Restore Service (async)
 // ==========================================
@@ -569,26 +627,15 @@ export async function getMorningNewRecordsByMonth(year, month) {
 export const BACKUP_FORMAT_VERSION = 1;
 
 /**
- * Exports all local data (records, settings, quiz, morning progress) as a structured backup object.
- * @returns {Promise<{
- *   version: number,
- *   appName: string,
- *   exportedAt: string,
- *   records: Array<any>,
- *   schoolSettings: { schoolName: string, participants: string[] },
- *   quizSettings: { quizUrl: string, quizQrUrl?: string },
- *   morningProgress: number,
- *   morningNewProgress: number,
- *   morningNewData?: { progress: number, records: Array<{ day: number, date: string, title: string }> }
- * }>}
+ * Exports all local data (records, settings, quiz, both morning courses) as a structured backup object.
  */
 export async function exportBackupData() {
-  const [records, schoolSettings, quizSettings, morningProgress, morningNewData] = await Promise.all([
+  const [records, schoolSettings, quizSettings, morningData, morningNewData] = await Promise.all([
     getRecords(),
     getSettings(),
     getQuizSettings(),
-    getMorningProgress(),
-    getMorningNewData()
+    getMorningData('morning'),
+    getMorningData('morning-new')
   ]);
 
   return {
@@ -598,8 +645,11 @@ export async function exportBackupData() {
     records,
     schoolSettings,
     quizSettings,
-    morningProgress,
+    morningProgress: morningData.progress,
+    morningRecords: morningData.records,
+    morningData,
     morningNewProgress: morningNewData.progress,
+    morningNewRecords: morningNewData.records,
     morningNewData
   };
 }
@@ -607,8 +657,6 @@ export async function exportBackupData() {
 /**
  * Validates a parsed JSON backup object.
  * Throws a descriptive Error if validation fails.
- * @param {any} data
- * @returns {{ valid: boolean, error?: string, summary?: { recordsCount: number, schoolName: string, participantsCount: number, morningProgress: number, morningNewProgress: number, morningNewRecordsCount: number } }}
  */
 export function validateBackupData(data) {
   if (!data || typeof data !== 'object') {
@@ -641,9 +689,18 @@ export function validateBackupData(data) {
     throw new Error("학교 설정의 'participants' (조리종사자 명단) 배열이 누락되었습니다.");
   }
 
+  const morningRecordsCount =
+    data.morningData && Array.isArray(data.morningData.records)
+      ? data.morningData.records.length
+      : Array.isArray(data.morningRecords)
+      ? data.morningRecords.length
+      : 0;
+
   const morningNewRecordsCount =
     data.morningNewData && Array.isArray(data.morningNewData.records)
       ? data.morningNewData.records.length
+      : Array.isArray(data.morningNewRecords)
+      ? data.morningNewRecords.length
       : 0;
 
   return {
@@ -652,7 +709,8 @@ export function validateBackupData(data) {
       recordsCount: data.records.length,
       schoolName: data.schoolSettings.schoolName || '(미지정)',
       participantsCount: data.schoolSettings.participants.length,
-      morningProgress: typeof data.morningProgress === 'number' ? data.morningProgress : 0,
+      morningProgress: typeof data.morningProgress === 'number' ? data.morningProgress : (data.morningData?.progress || 0),
+      morningRecordsCount,
       morningNewProgress: typeof data.morningNewProgress === 'number' ? data.morningNewProgress : (data.morningNewData?.progress || 0),
       morningNewRecordsCount
     }
@@ -661,8 +719,6 @@ export function validateBackupData(data) {
 
 /**
  * Restores all data from a validated backup object.
- * @param {any} backupData
- * @returns {Promise<{ recordsCount: number, schoolName: string, morningProgress: number, morningNewProgress: number }>}
  */
 export async function restoreBackupData(backupData) {
   validateBackupData(backupData);
@@ -681,13 +737,28 @@ export async function restoreBackupData(backupData) {
     await saveQuizQrUrl(backupData.quizSettings.quizQrUrl || undefined);
   }
 
-  // 4. Save morning progress (if present)
+  // 4. Save regular morning progress and records
   let morningProg = 0;
-  if (typeof backupData.morningProgress === 'number') {
-    morningProg = await setMorningProgress(backupData.morningProgress);
+  if (backupData.morningData && typeof backupData.morningData === 'object') {
+    const rawData = backupData.morningData;
+    const safeData = {
+      progress: Math.max(0, Math.min(190, parseInt(rawData.progress, 10) || 0)),
+      records: Array.isArray(rawData.records) ? rawData.records : []
+    };
+    localStorage.setItem(MORNING_RECORDS_KEY, JSON.stringify(safeData.records));
+    localStorage.setItem(MORNING_PROGRESS_KEY, JSON.stringify(safeData));
+    morningProg = safeData.progress;
+  } else if (Array.isArray(backupData.morningRecords)) {
+    const prog = typeof backupData.morningProgress === 'number' ? backupData.morningProgress : 0;
+    const safeData = { progress: prog, records: backupData.morningRecords };
+    localStorage.setItem(MORNING_RECORDS_KEY, JSON.stringify(backupData.morningRecords));
+    localStorage.setItem(MORNING_PROGRESS_KEY, JSON.stringify(safeData));
+    morningProg = prog;
+  } else if (typeof backupData.morningProgress === 'number') {
+    morningProg = await setMorningCourseProgress('morning', backupData.morningProgress);
   }
 
-  // 5. Save morning new progress and records (if present)
+  // 5. Save morning new progress and records
   let morningNewProg = 0;
   if (backupData.morningNewData && typeof backupData.morningNewData === 'object') {
     const rawData = backupData.morningNewData;
@@ -695,12 +766,19 @@ export async function restoreBackupData(backupData) {
       progress: Math.max(0, Math.min(190, parseInt(rawData.progress, 10) || 0)),
       records: Array.isArray(rawData.records) ? rawData.records : []
     };
-    const jsonStr = JSON.stringify(safeData);
-    localStorage.setItem(MORNING_NEW_PROGRESS_KEY, jsonStr);
-    localStorage.setItem('morningNewProgress_v1', jsonStr);
+    localStorage.setItem(MORNING_NEW_RECORDS_KEY, JSON.stringify(safeData.records));
+    localStorage.setItem(MORNING_NEW_PROGRESS_KEY, JSON.stringify(safeData));
+    localStorage.setItem('morningNewProgress_v1', JSON.stringify(safeData));
     morningNewProg = safeData.progress;
+  } else if (Array.isArray(backupData.morningNewRecords)) {
+    const prog = typeof backupData.morningNewProgress === 'number' ? backupData.morningNewProgress : 0;
+    const safeData = { progress: prog, records: backupData.morningNewRecords };
+    localStorage.setItem(MORNING_NEW_RECORDS_KEY, JSON.stringify(backupData.morningNewRecords));
+    localStorage.setItem(MORNING_NEW_PROGRESS_KEY, JSON.stringify(safeData));
+    localStorage.setItem('morningNewProgress_v1', JSON.stringify(safeData));
+    morningNewProg = prog;
   } else if (typeof backupData.morningNewProgress === 'number') {
-    morningNewProg = await setMorningNewProgress(backupData.morningNewProgress);
+    morningNewProg = await setMorningCourseProgress('morning-new', backupData.morningNewProgress);
   }
 
   return {

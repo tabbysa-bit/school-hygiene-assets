@@ -77,6 +77,7 @@ export const AppendixDetail: React.FC<AppendixDetailProps> = ({
                 points={item.summaryPoints}
                 themeColor="#15803D"
                 alt={item.title}
+                fitWidth
               />
               <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 text-white p-2 rounded-xl backdrop-blur-xs flex items-center gap-1 text-xs font-semibold">
                 <ZoomIn className="w-4 h-4" />
@@ -84,22 +85,12 @@ export const AppendixDetail: React.FC<AppendixDetailProps> = ({
               </div>
             </div>
 
-            {/* Title */}
-            <div className="py-3 px-4 text-center border-t border-slate-100 bg-white">
-              <h4 className="text-base sm:text-lg font-bold text-slate-800">
-                {item.title}
-              </h4>
-              {item.subtitle && (
-                <p className="text-xs text-slate-500 mt-0.5">{item.subtitle}</p>
-              )}
-            </div>
-
             {/* Individual Record Button */}
-            <div className="p-4 pt-1 border-t border-slate-50 bg-slate-50/50">
+            <div className="p-4 pt-3 border-t border-slate-100 bg-white">
               <button
                 type="button"
                 onClick={() => onAddRecord(item)}
-                className="w-full py-3.5 px-4 bg-[#e8f3ed] hover:bg-[#dcece3] text-[#355c49] font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2 active:scale-[0.99] shadow-2xs"
+                className="w-full py-3.5 px-4 bg-[#e8f3ed] hover:bg-[#dcece3] text-[#355c49] font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2 active:scale-[0.99] shadow-2xs cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>+ {currentMonth}월 교육기록에 추가</span>

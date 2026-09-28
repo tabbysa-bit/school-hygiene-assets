@@ -10,6 +10,7 @@ interface EducationCardImageProps {
   themeColor?: string;
   alt?: string;
   className?: string;
+  fitWidth?: boolean;
 }
 
 export const EducationCardImage: React.FC<EducationCardImageProps> = ({
@@ -18,7 +19,8 @@ export const EducationCardImage: React.FC<EducationCardImageProps> = ({
   subtitle,
   category = '위생교육',
   alt,
-  className = ''
+  className = '',
+  fitWidth = false
 }) => {
   const [loadFailed, setLoadFailed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,8 +48,10 @@ export const EducationCardImage: React.FC<EducationCardImageProps> = ({
   if (!src) {
     return (
       <div
-        className={`w-full aspect-square max-w-[620px] mx-auto bg-slate-50/90 rounded-2xl border border-slate-200/80 flex flex-col items-center justify-center p-8 text-center shadow-xs ${className}`}
-        style={{ aspectRatio: '1 / 1' }}
+        className={`w-full ${
+          fitWidth ? 'min-h-[280px]' : 'aspect-square max-w-[620px]'
+        } mx-auto bg-slate-50/90 rounded-2xl border border-slate-200/80 flex flex-col items-center justify-center p-8 text-center shadow-xs ${className}`}
+        style={fitWidth ? undefined : { aspectRatio: '1 / 1' }}
       >
         <div className="w-14 h-14 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mb-4 border border-emerald-100">
           <Clock className="w-7 h-7" />
@@ -69,13 +73,15 @@ export const EducationCardImage: React.FC<EducationCardImageProps> = ({
   if (src.startsWith('data:image/svg+xml')) {
     return (
       <div
-        className={`w-full aspect-square max-w-[620px] mx-auto overflow-hidden rounded-2xl bg-white shadow-xs ${className}`}
-        style={{ aspectRatio: '1 / 1' }}
+        className={`w-full ${
+          fitWidth ? 'overflow-hidden' : 'aspect-square max-w-[620px] rounded-2xl'
+        } mx-auto overflow-hidden bg-white shadow-xs ${className}`}
+        style={fitWidth ? undefined : { aspectRatio: '1 / 1' }}
       >
         <img
           src={src}
           alt={alt || title}
-          className="w-full h-full object-contain rounded-2xl"
+          className={`w-full ${fitWidth ? 'h-auto block' : 'h-full object-contain rounded-2xl'}`}
           loading="lazy"
         />
       </div>
@@ -87,8 +93,10 @@ export const EducationCardImage: React.FC<EducationCardImageProps> = ({
   if (loadFailed) {
     return (
       <div
-        className={`w-full aspect-square max-w-[620px] mx-auto bg-rose-50/60 rounded-2xl border border-rose-200 flex flex-col items-center justify-center p-8 text-center shadow-xs ${className}`}
-        style={{ aspectRatio: '1 / 1' }}
+        className={`w-full ${
+          fitWidth ? 'min-h-[280px]' : 'aspect-square max-w-[620px]'
+        } mx-auto bg-rose-50/60 rounded-2xl border border-rose-200 flex flex-col items-center justify-center p-8 text-center shadow-xs ${className}`}
+        style={fitWidth ? undefined : { aspectRatio: '1 / 1' }}
       >
         <div className="w-14 h-14 bg-rose-100/80 text-rose-600 rounded-2xl flex items-center justify-center mb-4 border border-rose-200">
           <AlertCircle className="w-7 h-7" />
@@ -111,17 +119,20 @@ export const EducationCardImage: React.FC<EducationCardImageProps> = ({
     );
   }
 
-  // Case 4: Actual WebP Image (e.g. 1254x1254 from Cloudflare Worker)
-  // Requirement 6: Maintain square ratio, object-fit: contain, no clipping
+  // Case 4: Actual WebP Image (e.g. from Cloudflare Worker)
   const imageSrcWithRetry = retryKey > 0 ? `${src}${src.includes('?') ? '&' : '?'}retry=${retryKey}` : src;
 
   return (
     <div
-      className={`relative w-full aspect-square max-w-[620px] mx-auto overflow-hidden rounded-2xl bg-slate-50/50 border border-slate-200/80 shadow-xs flex items-center justify-center ${className}`}
-      style={{ aspectRatio: '1 / 1' }}
+      className={`relative w-full ${
+        fitWidth
+          ? 'overflow-hidden flex items-center justify-center bg-slate-50/30'
+          : 'aspect-square max-w-[620px] mx-auto overflow-hidden rounded-2xl bg-slate-50/50 border border-slate-200/80 shadow-xs flex items-center justify-center'
+      } ${className}`}
+      style={fitWidth ? undefined : { aspectRatio: '1 / 1' }}
     >
       {isLoading && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/90 z-10 transition-opacity">
+        <div className="absolute inset-0 min-h-[300px] flex flex-col items-center justify-center bg-slate-50/90 z-10 transition-opacity">
           <Loader2 className="w-8 h-8 text-emerald-700 animate-spin mb-2" />
           <span className="text-xs text-slate-500 font-medium">이미지 불러오는 중...</span>
         </div>
@@ -140,10 +151,12 @@ export const EducationCardImage: React.FC<EducationCardImageProps> = ({
           setIsLoading(false);
           setLoadFailed(true);
         }}
-        className={`w-full h-full object-contain rounded-2xl transition-opacity duration-200 ${
+        className={`w-full ${
+          fitWidth ? 'h-auto block object-contain' : 'h-full object-contain rounded-2xl'
+        } transition-opacity duration-200 ${
           isLoading ? 'opacity-0' : 'opacity-100'
         }`}
-        style={{ aspectRatio: '1 / 1' }}
+        style={fitWidth ? undefined : { aspectRatio: '1 / 1' }}
       />
     </div>
   );
